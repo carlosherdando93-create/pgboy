@@ -89,7 +89,7 @@ E muito mais...
 ⚠️ Conteúdos proibidos em +24 países 
 etc..
 
-🔥Faça Qualquer Pessoa Comer Na sua mão. E Ficar Louca pra te dar. 😈🔞
+🔥 Faça Qualquer Pessoa Ficar Obcecada Por Você… e Implorando Pela Próxima Chance. 😈🔞
 
 Para manter tudo funcionando e afastar curiosos, cobramos apenas um valor simbólico de R$10.
 Quem entra aqui não paga… investe em si mesmo🔞 """
