@@ -91,14 +91,16 @@ etc..
 
 🔥 Faça Qualquer Pessoa Ficar Obcecada Por Você… e Implorando Pela Próxima Chance. 😈🔞
 
-Para manter tudo funcionando e afastar curiosos, cobramos apenas um valor simbólico de R$10.
-Quem entra aqui não paga… investe em si mesmo🔞 """
+Esse grupo não é aberto para todo mundo.
+Para manter o nível e garantir que só entre quem realmente quer resultado, o acesso é R$19.
+Menos do que um lanche.
+Mais do que suficiente para separar os Homens dos Meninos.🔞 """
 
 START_COUNTER = 135920
 STOP_COUNTER = 137500
 counter_value = START_COUNTER
 
-PLANS = {"vip": {"label": "🔥 Quero entrar!", "amount": 10.00}}
+PLANS = {"vip": {"label": "🔥 Quero entrar!", "amount": 19.00}}
 PROMO_CODES = {"THG100", "FLP100"}
 awaiting_promo = {}
 bot_app = None
@@ -113,7 +115,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     keyboard = [
         [InlineKeyboardButton(PLANS["vip"]["label"], callback_data="buy_vip")],
-        [InlineKeyboardButton("🎟️ Código Promocional", callback_data="promo")],
+        [InlineKeyboardButton("🎟️ Código", callback_data="promo")],
         [InlineKeyboardButton("🔄 Já paguei", callback_data="check_payment")]  # NOVO
     ]
 
@@ -122,7 +124,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(MAIN_TEXT, reply_markup=InlineKeyboardMarkup(keyboard))
 
     counter_msg = await update.message.reply_text(
-        f"🔥🔞 *Membros Mensais👥⬆:* {counter_value:,}".replace(",", "."),
+        f"🔥🔞 *Membros 👥⬆:* {counter_value:,}".replace(",", "."),
         parse_mode="Markdown"
     )
 
@@ -139,7 +141,7 @@ async def counter_task(context, chat_id, message_id):
             await context.bot.edit_message_text(
                 chat_id=chat_id,
                 message_id=message_id,
-                text=f"🔥🔞 *Membros Mensais👥⬆:* {counter_value:,}".replace(",", "."),
+                text=f"🔥🔞 *Membros 👥⬆:* {counter_value:,}".replace(",", "."),
                 parse_mode="Markdown"
             )
         except:
