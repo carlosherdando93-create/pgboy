@@ -1,8 +1,3 @@
-# Atualização do bot: incluir botão "Já paguei" e verificação manual de status
-
-# Abaixo está o código completo modificado conforme solicitado.
-# Observação: Coloquei comentários "### ALTERAÇÃO" para destacar partes novas.
-
 import os
 import time
 import sqlite3
@@ -103,9 +98,8 @@ PROMO_CODES = {"THG100", "FLP100"}
 awaiting_promo = {}
 bot_app = None
 
-# ************* NOVO: guardar último pagamento por usuário *************
-user_last_payment = {}  # uid -> payment_id
-# ***********************************************************************
+# guardar último pagamento por usuário
+user_last_payment = {}
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     global counter_value
@@ -114,19 +108,22 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     keyboard = [
         [InlineKeyboardButton(PLANS["vip"]["label"], callback_data="buy_vip")],
         [InlineKeyboardButton("🎟️ Código Promocional", callback_data="promo")],
-        [InlineKeyboardButton("🔄 Já paguei", callback_data="check_payment")]  # NOVO
+        [InlineKeyboardButton("🔄 Já paguei", callback_data="check_payment")]
     ]
 
-    # NOVO bloco de boas-vindas
-    
-    await update.message.reply_text(MAIN_TEXT, reply_markup=InlineKeyboardMarkup(keyboard))
+    await update.message.reply_text(
+        MAIN_TEXT,
+        reply_markup=InlineKeyboardMarkup(keyboard)
+    )
 
     counter_msg = await update.message.reply_text(
         f"🔥🔞 *Membros Atuais👥⬆:* {counter_value:,}".replace(",", "."),
         parse_mode="Markdown"
     )
 
-    asyncio.create_task(counter_task(context, counter_msg.chat_id, counter_msg.message_id))
+    asyncio.create_task(
+        counter_task(context, counter_msg.chat_id, counter_msg.message_id)
+    )
 
 async def counter_task(context, chat_id, message_id):
     global counter_value
@@ -165,18 +162,15 @@ async def process_payment(update, context, plan_key):
     qr_b64 = response.get("point_of_interaction", {}).get("transaction_data", {}).get("qr_code_base64")
 
     save_payment(payment_id, user_id, amount)
-
-    # ************* salvar pagamento *************
     user_last_payment[user_id] = payment_id
-    # ********************************************
 
     try:
         target_chat = update.callback_query.message
     except:
         target_chat = update.message
 
-await target_chat.reply_text(
-    f"""✅ *Falta só 1 passo*
+    await target_chat.reply_text(
+        f"""✅ *Falta só 1 passo*
 Pague agora e receba o acesso 
 vitalício automaticamente.
 
@@ -185,28 +179,28 @@ vitalício automaticamente.
 
 🪙 *PIX Copia e Cola:*  
 `{qr}`""",
-    parse_mode="Markdown"
-)
+        parse_mode="Markdown"
+    )
 
     if qr_b64:
         img = io.BytesIO(base64.b64decode(qr_b64))
         await target_chat.reply_photo(img)
 
-        # Enviar mensagem 10 segundos depois
         await asyncio.sleep(10)
-        await target_chat.reply_text("""✨ Seu link VIP aparece sozinho após o pagamento.
-Se houver atraso, clique em *Já paguei* e o sistema libera seu acesso instantaneamente.""", parse_mode="Markdown")
+        await target_chat.reply_text(
+            """✨ Seu link VIP aparece sozinho após o pagamento.
+Se houver atraso, clique em *Já paguei* e o sistema libera seu acesso instantaneamente.""",
+            parse_mode="Markdown"
+        )
 
-
-# ************* NOVO: FUNÇÃO DE CHECK DE PAGAMENTO *************
 async def check_payment_status(update, context):
     uid = update.effective_user.id
 
     if uid not in user_last_payment:
         from telegram import InlineKeyboardButton, InlineKeyboardMarkup
-
-        # NOVO botão de acesso liberado
-        keyboard = InlineKeyboardMarkup([[InlineKeyboardButton("✅ Acesso Liberado! ENTRE", url=invite.invite_link)]])
+        keyboard = InlineKeyboardMarkup(
+            [[InlineKeyboardButton("✅ Acesso Liberado! ENTRE", url=invite.invite_link)]]
+        )
         await update.callback_query.message.reply_text(
             "❌ Você ainda não gerou um pagamento. Clique em *Quero entrar!* primeiro.",
             parse_mode="Markdown"
@@ -214,12 +208,14 @@ async def check_payment_status(update, context):
         return
 
     payment_id = user_last_payment[uid]
-
     info = mp.payment().get(payment_id)
     status = info.get("response", {}).get("status")
 
     if status == "approved":
-        invite = await bot_app.bot.create_chat_invite_link(GROUP_CHAT_ID, member_limit=1)
+        invite = await bot_app.bot.create_chat_invite_link(
+            GROUP_CHAT_ID,
+            member_limit=1
+        )
         await update.callback_query.message.reply_text(
             f"🎉 *Pagamento confirmado!*\nSeu acesso foi liberado!:\n{invite.invite_link}",
             parse_mode="Markdown"
@@ -230,7 +226,6 @@ async def check_payment_status(update, context):
         f"⏳ Seu pagamento ainda está como: *{status}*\nTente novamente em alguns segundos.",
         parse_mode="Markdown"
     )
-# ****************************************************************
 
 async def button(update: Update, context):
     q = update.callback_query
@@ -245,11 +240,9 @@ async def button(update: Update, context):
         await process_payment(update, context, "vip")
         return
 
-    # ************* NOVO: botão "Já paguei" *************
     if q.data == "check_payment":
         await check_payment_status(update, context)
         return
-    # *****************************************************
 
 async def handle_message(update: Update, context):
     uid = update.effective_user.id
@@ -260,7 +253,6 @@ async def handle_message(update: Update, context):
     code = update.message.text.strip().upper()
 
     if code in PROMO_CODES:
-        # NOVO: mensagens personalizadas por código
         if code == "THG100":
             await update.message.reply_text("🔑 Código De Dono! exclusivo do Thiago reconhecido!")
         elif code == "FLP100":
@@ -274,7 +266,7 @@ app = FastAPI()
 
 @app.post("/webhook/mp")
 async def mp_webhook(request: Request):
-    return {"status": "disabled"}  # Webhook desativado conforme pedido
+    return {"status": "disabled"}
 
 def main():
     init_db()
