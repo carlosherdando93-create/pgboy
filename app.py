@@ -175,10 +175,18 @@ async def process_payment(update, context, plan_key):
     except:
         target_chat = update.message
 
-    await target_chat.reply_text(
-        f"🔥 *{label}*\n💰 *R$ {amount:.2f}*\n\n🪙 *PIX Copia e Cola:* \n`{qr}`",
-        parse_mode="Markdown"
-    )
+await target_chat.reply_text(
+    f"""✅ *Falta só 1 passo*
+Pague agora e receba o acesso 
+vitalício automaticamente.
+
+🔥 *{label}*
+💰 *R$ {amount:.2f}*
+
+🪙 *PIX Copia e Cola:*  
+`{qr}`""",
+    parse_mode="Markdown"
+)
 
     if qr_b64:
         img = io.BytesIO(base64.b64decode(qr_b64))
