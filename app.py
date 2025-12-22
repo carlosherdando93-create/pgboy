@@ -176,7 +176,8 @@ async def process_payment(update, context, plan_key):
         target_chat = update.message
 
     await target_chat.reply_text(
-        f"🔥 *{label}*\n💰 *R$ {amount:.2f}*\n\n🪙 *PIX Copia e Cola:* \n`{qr}`",
+        f"🔥✅ Você está a um passo de entrar
+        Efetue o pagamento agora. Após a confirmação, o acesso ao grupo será liberado automaticamente para você. *{label}*\n💰 *R$ {amount:.2f}*\n\n🪙 *PIX Copia e Cola:* \n`{qr}`",
         parse_mode="Markdown"
     )
 
